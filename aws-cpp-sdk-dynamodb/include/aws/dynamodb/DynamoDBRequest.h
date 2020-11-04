@@ -25,6 +25,7 @@ namespace DynamoDB
 {
   class AWS_DYNAMODB_API DynamoDBRequest : public Aws::AmazonSerializableWebServiceRequest
   {
+    Aws::Http::HeaderValueCollection customer_headers;
   public:
     virtual ~DynamoDBRequest () {}
 
@@ -39,12 +40,18 @@ namespace DynamoDB
         headers.emplace(Aws::Http::HeaderValuePair(Aws::Http::CONTENT_TYPE_HEADER, Aws::AMZN_JSON_CONTENT_TYPE_1_0 ));
       }
       headers.emplace(Aws::Http::HeaderValuePair(Aws::Http::API_VERSION_HEADER, "2012-08-10"));
+      for (auto header: customer_headers) {
+        headers.insert(header);
+      }
       return headers;
+    }
+
+    void setCustomerHeaders(Aws::String headerName, Aws::String headerValue) {
+      customer_headers.emplace(Aws::Http::HeaderValuePair(headerName, headerValue));
     }
 
   protected:
     virtual Aws::Http::HeaderValueCollection GetRequestSpecificHeaders() const { return Aws::Http::HeaderValueCollection(); }
-
   };
 
 
